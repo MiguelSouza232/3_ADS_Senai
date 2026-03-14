@@ -1,63 +1,44 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-import { VideoView, useVideoPlayer } from "expo-video";
+//Menu
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-export default function App() {
-  const player = useVideoPlayer(
-    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    (player) => {
-      player.loop = true;
-      // player.play();
-    },
-  );
+//MENU SOBRE
+import telasSobre from "./telas/Sobre";
 
+//MENU - BOTTOM TABS
+const Tab = createBottomTabNavigator();
+
+function Menu() {
   return (
-    <ScrollView style={styles.container}>
-      <Image
-        source={require("./assets/SubLogoCelsinho.png")}
-        resizeMode="contain"
-        style={styles.logo}
-      />
-      <Text style={styles.text}>APP Dj Celsinho</Text>
-      <Image
-        source={require("./assets/Contrate.png")}
-        resizeMode="contain"
-        style={styles.imagem}
-      />
-      <StatusBar style="light" animated />
-
-      <VideoView player={player} style={styles.video} allowsPictureInPicture />
-    </ScrollView>
+    <Tab.Navigator
+      screenOptions={({route}) => ({
+        tabBarIcon({focused, color, size}) => ({
+          let iconName: any;
+          if (route.name === "Sobre") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "Servicos") {
+            iconName = focused ? "bag" : "bag-outline";
+          } else if (route.name === "Perfil") {
+            iconName = focused ? "person" : "person-outline";
+          }
+        }),
+        headerShown: false,
+        tabBarActiveTintColor: "purple",
+        tabBarInactiveTintColor: "gray",
+      })}
+    >
+      <Tab.Screen name="Sobre" component={telasSobre} />
+      <Tab.Screen name="Sobre1" component={telasSobre} />
+      <Tab.Screen name="Sobre2" component={telasSobre} />
+      <Tab.Screen name="Sobre3" component={telasSobre} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
-  text: {
-    color: "#ffffff",
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  imagem: {
-    width: 300,
-    height: 300,
-    marginTop: 20,
-    alignSelf: "center",
-  },
-  logo: {
-    width: 200,
-    height: 200,
-    marginBottom: 100,
-    alignSelf: "center",
-  },
-  video: {
-    width: 300,
-    alignSelf: "center",
-    height: 275,
-    marginTop: 50,
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Menu />
+    </NavigationContainer>
+  );
+}
