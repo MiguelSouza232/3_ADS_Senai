@@ -1,7 +1,7 @@
 #include <WiFi.h>
 
 char ssid[] = "iotsenai123";
-char senha[] = "iotsenai123";
+char senha[] = "iotsenai123 ";
 WiFiServer server(80);
 
 void setup() {
