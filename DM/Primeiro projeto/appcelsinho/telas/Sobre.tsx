@@ -1,49 +1,41 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { VideoView, useVideoPlayer } from "expo-video";
-
-//Menu
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-
-//MENU - BOTTOM TABS
-const Tab = createBottomTabNavigator();
-
-function Menu() {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen name="Sobre" component={Sobre} />
-      <Tab.Screen name="Home" component={App} />
-    </Tab.Navigator>
-  );
-}
+import React from "react";
 
 export default function Sobre() {
   const player = useVideoPlayer(
     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     (player) => {
       player.loop = true;
-      // player.play();
     },
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <Image
-        source={require("../assets/SubLogoCelsinho.png")}
-        resizeMode="contain"
-        style={styles.logo}
-      />
-      <Text style={styles.text}>APP Dj Celsinho</Text>
-      <Image
-        source={require("../assets/Contrate.png")}
-        resizeMode="contain"
-        style={styles.imagem}
-      />
-      <StatusBar style="light" animated />
+    <>
+      <ScrollView style={styles.container}>
+        <Image
+          source={require("../assets/SubLogoCelsinho.png")}
+          resizeMode="contain"
+          style={styles.logo}
+        />
 
-      <VideoView player={player} style={styles.video} allowsPictureInPicture />
-    </ScrollView>
+        <Text style={styles.text}>APP Dj Celsinho</Text>
+
+        <Image
+          source={require("../assets/Contrate.png")}
+          resizeMode="contain"
+          style={styles.imagem}
+        />
+
+        <VideoView
+          player={player}
+          style={styles.video}
+          allowsPictureInPicture
+        />
+      </ScrollView>
+      <StatusBar style="light" animated />
+    </>
   );
 }
 
@@ -72,8 +64,8 @@ const styles = StyleSheet.create({
   },
   video: {
     width: 300,
-    alignSelf: "center",
     height: 275,
     marginTop: 50,
+    alignSelf: "center",
   },
 });
