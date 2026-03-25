@@ -14,7 +14,7 @@
 /****************************************
  * Define Constants
  ****************************************/
-const char *UBIDOTS_TOKEN = "BBUS-wFGegKHNmyr5J1yrp8O4Flf2r6QvzV";  // Put here your Ubidots TOKEN
+const char *UBIDOTS_TOKEN = "";  // Put here your Ubidots TOKEN
 const char *WIFI_SSID = "iotsenai123";      // Put here your Wi-Fi SSID
 const char *WIFI_PASS = "iotsenai123";      // Put here your Wi-Fi password
 const char *DEVICE_LABEL = "TB";   // Put here your Device label to which data  will be published
