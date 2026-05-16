@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, ScrollView, Image, View } from "react-native";
+import { StyleSheet, ScrollView, Image, View } from "react-native";
 import { VideoView, useVideoPlayer } from "expo-video";
 
 //Componente de Texto

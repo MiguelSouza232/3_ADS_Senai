@@ -11,6 +11,8 @@ import { useFonts, Poppins_400Regular } from "@expo-google-fonts/poppins";
 
 //Menu SOBRE
 import TelaSobre from "./telas/Sobre";
+import TelaServicos from "./telas/Servicos/Index";
+import TelaPerfil from "./telas/Perfil";
 
 //MENU - BOTTOM TABS
 const Tab = createBottomTabNavigator();
@@ -24,7 +26,7 @@ function Menu() {
 
           if (route.name === "Sobre") {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Produtos") {
+          } else if (route.name === "Serviços") {
             iconName = focused ? "musical-note" : "musical-note-outline";
           } else if (route.name === "Perfil") {
             iconName = focused ? "person" : "person-outline";
@@ -37,8 +39,8 @@ function Menu() {
       })}
     >
       <Tab.Screen name="Sobre" component={TelaSobre} />
-      <Tab.Screen name="Produtos" component={TelaSobre} />
-      <Tab.Screen name="Perfil" component={TelaSobre} />
+      <Tab.Screen name="Serviços" component={TelaServicos} />
+      <Tab.Screen name="Perfil" component={TelaPerfil} />
     </Tab.Navigator>
   );
 }
