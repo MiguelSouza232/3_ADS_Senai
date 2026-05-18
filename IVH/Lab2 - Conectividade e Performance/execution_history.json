@@ -1,0 +1,18 @@
+[
+  {
+    "timestamp": "19:25:49",
+    "server": "8.8.8.8",
+    "latency": 2.07,
+    "status": "SUCESSO",
+    "packet_info": "Resposta de 8.8.8.8: bytes=32 tempo=2049ms TTL=116",
+    "full_output": "\nDisparando 8.8.8.8 com 32 bytes de dados:\nResposta de 8.8.8.8: bytes=32 tempo=2049ms TTL=116\n\nEstat¡sticas do Ping para 8.8.8.8:\n    Pacotes: Enviados = 1, Recebidos = 1, Perdidos = 0 (0% de\n             perda),\nAproximar um n£mero redondo de vezes em milissegundos:\n    M¡nimo = 2049ms, M ximo = 2049ms, M‚dia = 2049ms\n"
+  },
+  {
+    "timestamp": "19:22:16",
+    "server": "8.8.8.8",
+    "latency": 0.02,
+    "status": "SUCESSO",
+    "packet_info": "Resposta de 8.8.8.8: bytes=32 tempo=2ms TTL=116",
+    "full_output": "\nDisparando 8.8.8.8 com 32 bytes de dados:\nResposta de 8.8.8.8: bytes=32 tempo=2ms TTL=116\n\nEstat¡sticas do Ping para 8.8.8.8:\n    Pacotes: Enviados = 1, Recebidos = 1, Perdidos = 0 (0% de\n             perda),\nAproximar um n£mero redondo de vezes em milissegundos:\n    M¡nimo = 2ms, M ximo = 2ms, M‚dia = 2ms\n"
+  }
+]

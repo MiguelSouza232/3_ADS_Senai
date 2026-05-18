@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Monitoramento de Rede Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .status-badge {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <!-- Container Principal -->
+    <div class="min-h-screen p-4 md:p-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">
+                🏭 Monitoramento de Rede Industrial
+            </h1>
+            <p class="text-gray-400 text-lg">Atividade 5: Análise de Latência e Perda de Pacotes</p>
+        </div>
+
+        <!-- Grid Principal -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
+            <!-- Card 1: Status da Conexão -->
+            <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg p-6 shadow-xl h-48 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-white font-semibold text-sm">Status da Conexão</h3>
+                        <div class="w-4 h-4 bg-emerald-300 rounded-full status-badge"></div>
+                    </div>
+                    <p class="text-emerald-100 text-xs mb-2">Estado Atual</p>
+                </div>
+                <p class="text-white text-2xl font-bold">✅ Online</p>
+            </div>
+
+            <!-- Card 2: Latência Atual -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg p-6 shadow-xl h-48 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-white font-semibold text-sm mb-3">Latência Atual</h3>
+                    <p class="text-blue-100 text-xs mb-2">Tempo de Resposta</p>
+                </div>
+                <div>
+                    <p class="text-white text-2xl font-bold" id="latencyDisplay">-- ms</p>
+                    <p class="text-blue-200 text-xs mt-2" id="latencyStatus">Aguardando dados...</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Status -->
+            <div class="bg-gradient-to-br from-orange-600 to-orange-700 rounded-lg p-6 shadow-xl h-48 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-white font-semibold text-sm mb-3">Último Status</h3>
+                    <p class="text-orange-100 text-xs mb-2">Resultado</p>
+                </div>
+                <div>
+                    <p class="text-white text-2xl font-bold" id="statusDisplay">--</p>
+                    <p class="text-orange-200 text-xs mt-2" id="statusTime">Sem execução</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Uptime -->
+            <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-lg p-6 shadow-xl h-48 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-white font-semibold text-sm mb-3">Tempo Online</h3>
+                    <p class="text-purple-100 text-xs mb-2">Conectado Há</p>
+                </div>
+                <p class="text-white text-2xl font-bold" id="uptimeDisplay">00:00:00</p>
+            </div>
+        </div>
+
+        <!-- Grid Secundário -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Gráfico de Latência -->
+            <div class="lg:col-span-2 bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700">
+                <h2 class="text-white text-xl font-bold mb-6">📊 Histórico de Latência (Últimas 24h)</h2>
+                <div class="relative h-64">
+                    <canvas id="latencyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Indicadores de Saúde -->
+            <div class="bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700">
+                <h2 class="text-white text-xl font-bold mb-6">🏥 Saúde da Rede</h2>
+                
+                <!-- Latência Média -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-300">Latência Média</span>
+                        <span class="text-emerald-400 font-bold" id="avgLatency">-- ms</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="bg-emerald-500 h-2 rounded-full" id="avgLatencyBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Taxa de Sucesso -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-300">Taxa de Sucesso</span>
+                        <span class="text-blue-400 font-bold" id="successRate">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" id="successRateBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Total de Execuções -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-300">Total de Execuções</span>
+                        <span class="text-purple-400 font-bold" id="totalExecutions">0</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="bg-purple-500 h-2 rounded-full" id="totalExecutionsBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Tempo Online -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-300">Tempo Monitorando</span>
+                        <span class="text-yellow-400 font-bold" id="monitoringTime">00:00:00</span>
+                    </div>
+                    <div class="w-full bg-slate-700 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Alertas e Estatísticas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            
+            <!-- Alertas -->
+            <div class="bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700">
+                <h2 class="text-white text-xl font-bold mb-6">⚠️ Alertas & Eventos</h2>
+                
+                <div class="space-y-4">
+                    <!-- Alerta Informativo -->
+                    <div class="bg-blue-900 border-l-4 border-blue-500 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-blue-300 font-semibold">ℹ️ Informação</p>
+                                <p class="text-blue-200 text-sm">Monitoramento iniciado com sucesso</p>
+                            </div>
+                            <span class="text-blue-400 text-xs">14:32</span>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de Sucesso -->
+                    <div class="bg-emerald-900 border-l-4 border-emerald-500 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-emerald-300 font-semibold">✅ Sucesso</p>
+                                <p class="text-emerald-200 text-sm">Conexão com servidor restabelecida</p>
+                            </div>
+                            <span class="text-emerald-400 text-xs">14:25</span>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de Aviso -->
+                    <div class="bg-yellow-900 border-l-4 border-yellow-500 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-yellow-300 font-semibold">⚠️ Aviso</p>
+                                <p class="text-yellow-200 text-sm">Latência acima de 100ms detectada</p>
+                            </div>
+                            <span class="text-yellow-400 text-xs">14:12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estatísticas Detalhadas -->
+            <div class="bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700">
+                <h2 class="text-white text-xl font-bold mb-6">📈 Estatísticas Detalhadas</h2>
+                
+                <div class="space-y-4">
+                    <!-- Latência Mínima -->
+                    <div class="flex justify-between items-center p-4 bg-slate-700 rounded-lg">
+                        <span class="text-gray-300">Latência Mínima</span>
+                        <span class="text-white font-bold text-lg" id="minLatency">-- ms</span>
+                    </div>
+
+                    <!-- Latência Máxima -->
+                    <div class="flex justify-between items-center p-4 bg-slate-700 rounded-lg">
+                        <span class="text-gray-300">Latência Máxima</span>
+                        <span class="text-orange-400 font-bold text-lg" id="maxLatency">-- ms</span>
+                    </div>
+
+                    <!-- Execuções com Sucesso -->
+                    <div class="flex justify-between items-center p-4 bg-slate-700 rounded-lg">
+                        <span class="text-gray-300">Execuções com Sucesso</span>
+                        <span class="text-blue-400 font-bold text-lg" id="successCount">0</span>
+                    </div>
+
+                    <!-- Execuções com Falha -->
+                    <div class="flex justify-between items-center p-4 bg-slate-700 rounded-lg">
+                        <span class="text-gray-300">Execuções com Falha</span>
+                        <span class="text-red-400 font-bold text-lg" id="failureCount">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparação: Rede Normal vs Com Perda -->
+        <div class="bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700 mb-8">
+            <h2 class="text-white text-xl font-bold mb-6">🔍 Comparação: Cenários de Rede</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Rede Normal -->
+                <div class="bg-gradient-to-br from-emerald-900 to-emerald-800 rounded-lg p-6 border border-emerald-700">
+                    <h3 class="text-emerald-300 font-bold text-lg mb-4">✅ Rede Normal</h3>
+                    <ul class="text-emerald-200 text-sm space-y-2">
+                        <li>⏱️ Latência: 50-100ms</li>
+                        <li>📦 Packet Loss: 0%</li>
+                        <li>🎯 Taxa de Sucesso: 100%</li>
+                        <li>⚡ Performance: Excelente</li>
+                    </ul>
+                </div>
+
+                <!-- Rede com Lag 1000ms -->
+                <div class="bg-gradient-to-br from-yellow-900 to-yellow-800 rounded-lg p-6 border border-yellow-700">
+                    <h3 class="text-yellow-300 font-bold text-lg mb-4">⚠️ Rede com Lag 1000ms</h3>
+                    <ul class="text-yellow-200 text-sm space-y-2">
+                        <li>⏱️ Latência: 1000-2000ms</li>
+                        <li>📦 Packet Loss: 0%</li>
+                        <li>🎯 Taxa de Sucesso: 100%</li>
+                        <li>⚡ Performance: Inadequada</li>
+                    </ul>
+                </div>
+
+                <!-- Rede com 10% Loss -->
+                <div class="bg-gradient-to-br from-red-900 to-red-800 rounded-lg p-6 border border-red-700">
+                    <h3 class="text-red-300 font-bold text-lg mb-4">🔴 Rede com 10% Loss</h3>
+                    <ul class="text-red-200 text-sm space-y-2">
+                        <li>⏱️ Latência: 500ms-5s</li>
+                        <li>📦 Packet Loss: 10%</li>
+                        <li>🎯 Taxa de Sucesso: 90%</li>
+                        <li>⚡ Performance: Crítica</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Histórico -->
+        <div class="bg-slate-800 rounded-lg p-6 shadow-xl border border-slate-700">
+            <h2 class="text-white text-xl font-bold mb-6">📋 Histórico de Conexões</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-slate-700">
+                            <th class="text-left py-3 px-4 text-gray-400">Hora</th>
+                            <th class="text-left py-3 px-4 text-gray-400">Servidor</th>
+                            <th class="text-left py-3 px-4 text-gray-400">Latência</th>
+                            <th class="text-left py-3 px-4 text-gray-400">Status</th>
+                            <th class="text-left py-3 px-4 text-gray-400">Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr class="border-b border-slate-700">
+                            <td colspan="5" class="py-4 px-4 text-center text-gray-400">
+                                ⏳ Aguardando dados...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-gray-500 text-sm">
+            <p>🏭 Atividade 5 - Lab 2: Conectividade e Performance | Dashboard de Monitoramento</p>
+            <p class="mt-2">Última atualização: <span id="lastUpdate">14:35:22</span> | Próxima atualização em 30 segundos</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuração da API
+        const API_URL = 'http://localhost:5000/api';
+        let latencyChart = null;
+        let latencyHistory = [];
+
+        // Atualizar hora
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('pt-BR');
+        }
+
+        // Buscar dados do servidor
+        async function fetchData() {
+            try {
+                const response = await fetch(`${API_URL}/history`);
+                const data = await response.json();
+
+                if (data.success) {
+                    updateDashboard(data.history, data.stats);
+                }
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                // Mostrar mensagem de conexão perdida
+                if (document.querySelector('.connection-error') === null) {
+                    showConnectionError();
+                }
+            }
+        }
+
+        // Mostrar erro de conexão
+        function showConnectionError() {
+            const banner = document.createElement('div');
+            banner.className = 'connection-error bg-red-600 text-white p-4 rounded-lg mb-4 text-center';
+            banner.innerHTML = '❌ Não é possível conectar ao servidor. Certifique-se de que "python server.py" está rodando.';
+            document.querySelector('.min-h-screen').insertBefore(banner, document.querySelector('.mb-8').nextSibling);
+        }
+
+        // Atualizar dashboard com dados reais
+        function updateDashboard(history, stats) {
+            // Remover erro de conexão se existir
+            const errorBanner = document.querySelector('.connection-error');
+            if (errorBanner) {
+                errorBanner.remove();
+            }
+
+            // Atualizar status da conexão
+            if (history.length > 0) {
+                const latest = history[0];
+                
+                // Latência
+                const latencyMs = parseFloat(latest.latency) * 1000;
+                document.getElementById('latencyDisplay').textContent = latencyMs.toFixed(0) + ' ms';
+                
+                // Determinar cor e status
+                let statusText = '';
+                if (latencyMs < 100) {
+                    statusText = '↓ Excelente';
+                } else if (latencyMs < 200) {
+                    statusText = '↓ Bom';
+                } else if (latencyMs < 500) {
+                    statusText = '⚠️ Razoável';
+                } else {
+                    statusText = '↑ Ruim';
+                }
+                document.getElementById('latencyStatus').textContent = statusText;
+
+                // Status
+                const statusDisplay = document.getElementById('statusDisplay');
+                const statusTime = document.getElementById('statusTime');
+                
+                if (latest.status === 'SUCESSO') {
+                    statusDisplay.textContent = '✅ Sucesso';
+                    statusDisplay.parentElement.parentElement.className = 'bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-lg p-6 shadow-xl';
+                } else {
+                    statusDisplay.textContent = '❌ Erro';
+                    statusDisplay.parentElement.parentElement.className = 'bg-gradient-to-br from-red-600 to-red-700 rounded-lg p-6 shadow-xl';
+                }
+                statusTime.textContent = latest.timestamp;
+            }
+
+            // Atualizar uptime
+            document.getElementById('uptimeDisplay').textContent = stats.uptime;
+
+            // Atualizar indicadores de saúde
+            document.getElementById('avgLatency').textContent = stats.avg_latency.toFixed(0) + ' ms';
+            const avgPercent = Math.min((stats.avg_latency / 300) * 100, 100);
+            document.getElementById('avgLatencyBar').style.width = avgPercent + '%';
+
+            document.getElementById('successRate').textContent = stats.success_rate.toFixed(1) + '%';
+            document.getElementById('successRateBar').style.width = stats.success_rate + '%';
+
+            document.getElementById('totalExecutions').textContent = stats.total_executions;
+            const totalPercent = Math.min((stats.total_executions / 50) * 100, 100);
+            document.getElementById('totalExecutionsBar').style.width = totalPercent + '%';
+
+            document.getElementById('monitoringTime').textContent = stats.uptime;
+
+            // Atualizar estatísticas detalhadas
+            document.getElementById('minLatency').textContent = (stats.min_latency * 1000).toFixed(0) + ' ms';
+            document.getElementById('maxLatency').textContent = (stats.max_latency * 1000).toFixed(0) + ' ms';
+            document.getElementById('successCount').textContent = stats.successful;
+            document.getElementById('failureCount').textContent = stats.failed;
+
+            // Atualizar tabela de histórico
+            updateHistoryTable(history);
+
+            // Atualizar gráfico
+            updateLatencyChart(history);
+        }
+
+        // Atualizar tabela de histórico
+        function updateHistoryTable(history) {
+            const tbody = document.getElementById('historyTableBody');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr class="border-b border-slate-700"><td colspan="5" class="py-4 px-4 text-center text-gray-400">⏳ Aguardando dados...</td></tr>';
+                return;
+            }
+
+            // Mostrar apenas os últimos 10 registros
+            const recentHistory = history.slice(0, 10);
+            
+            tbody.innerHTML = recentHistory.map(record => {
+                const isSuccess = record.status === 'SUCESSO';
+                const statusBadge = isSuccess 
+                    ? '<span class="bg-emerald-900 text-emerald-300 px-3 py-1 rounded-full text-xs">✅ Sucesso</span>'
+                    : '<span class="bg-red-900 text-red-300 px-3 py-1 rounded-full text-xs">❌ Falha</span>';
+                
+                const latencyMs = (parseFloat(record.latency) * 1000).toFixed(0);
+                let latencyColor = 'text-emerald-400';
+                if (latencyMs > 500) {
+                    latencyColor = 'text-red-400';
+                } else if (latencyMs > 200) {
+                    latencyColor = 'text-yellow-400';
+                } else if (latencyMs > 100) {
+                    latencyColor = 'text-blue-400';
+                }
+
+                return `
+                    <tr class="border-b border-slate-700 hover:bg-slate-700/50">
+                        <td class="py-3 px-4 text-gray-300">${record.timestamp}</td>
+                        <td class="py-3 px-4 text-gray-300">${record.server}</td>
+                        <td class="py-3 px-4 ${latencyColor}">${latencyMs} ms</td>
+                        <td class="py-3 px-4">${statusBadge}</td>
+                        <td class="py-3 px-4 text-gray-300 text-xs">${record.packet_info.substring(0, 30)}...</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Atualizar gráfico de latência
+        function updateLatencyChart(history) {
+            // Extrair últimos 24 dados (ou menos se houver menos)
+            const chartData = history.slice(0, 24).reverse().map(h => parseFloat(h.latency) * 1000);
+            const chartLabels = history.slice(0, 24).reverse().map(h => h.timestamp);
+
+            if (latencyChart) {
+                latencyChart.data.labels = chartLabels;
+                latencyChart.data.datasets[0].data = chartData;
+                latencyChart.update();
+            } else {
+                // Criar gráfico se não existir
+                const ctxLatency = document.getElementById('latencyChart').getContext('2d');
+                latencyChart = new Chart(ctxLatency, {
+                    type: 'line',
+                    data: {
+                        labels: chartLabels,
+                        datasets: [{
+                            label: 'Latência (ms)',
+                            data: chartData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#fff',
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#d1d5db',
+                                    font: {
+                                        size: 12,
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            filler: {
+                                propagate: true
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#9ca3af',
+                                    callback: function(value) {
+                                        return value + ' ms';
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#9ca3af'
+                                },
+                                grid: {
+                                    color: 'rgba(148, 163, 184, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Inicializar
+        updateTime();
+        fetchData();
+        setInterval(updateTime, 1000);
+        setInterval(fetchData, 2000); // Atualizar a cada 2 segundos
+    </script>
+</body>
+</html>
