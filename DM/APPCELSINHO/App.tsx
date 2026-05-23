@@ -35,6 +35,13 @@ function Menu() {
         },
         headerShown: false,
         tabBarActiveTintColor: "#6d24ca",
+        tabBarStyle: {
+          backgroundColor: "#272727",
+          height: 75,
+        },
+        tabBarLabelStyle:{
+          fontSize: 15,
+        },
         tabBarInactiveTintColor: "gray",
       })}
     >

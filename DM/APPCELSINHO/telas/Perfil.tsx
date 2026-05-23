@@ -1,6 +1,5 @@
 import { StatusBar } from "expo-status-bar";
 import {
-  StyleSheet,
   ScrollView,
   View,
   Image,
@@ -10,8 +9,10 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 
 import Texto from "../componentes/Texto";
+import estilosPerfil from "./estilosPerfil";
 
 export default function Perfil() {
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +22,14 @@ export default function Perfil() {
   const [savedNome, setSavedNome] = useState("");
   const [savedEmail, setSavedEmail] = useState("");
   const [savedCelular, setSavedCelular] = useState("");
+
+  // Estados da câmera
+  const [facing, setFacing] = useState<CameraType>("back");
+  const [permission, requestPermission] = useCameraPermissions();
+
+  const toggleCameraFacing = () => {
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  };
 
   const iniciarEdicao = () => {
     setSavedNome(nome);
@@ -95,42 +104,55 @@ export default function Perfil() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.headerContainer}>
+    <ScrollView style={estilosPerfil.container} contentContainerStyle={estilosPerfil.content}>
+      <View style={estilosPerfil.headerContainer}>
         <Image
           source={require("../assets/LogoCelsinho.png")}
-          style={styles.headerBackground}
+          style={estilosPerfil.headerBackground}
           resizeMode="contain"
         />
       </View>
 
-      <View style={styles.photoWrapper}>
-        <Image
-          source={require("../assets/LogoCelsinho.png")}
-          style={styles.photo}
-          resizeMode="cover"
-        />
-        <TouchableOpacity style={styles.cameraButton}>
-          <Ionicons name="camera" size={20} color="#fff" />
+      <View style={estilosPerfil.photoWrapper}>
+        {!permission ? (
+          <Image
+            source={require("../assets/icon.png")}
+            style={estilosPerfil.photo}
+            resizeMode="cover"
+          />
+        ) : !permission.granted ? (
+          <TouchableOpacity 
+            style={estilosPerfil.photo}
+            onPress={requestPermission}
+          >
+            <Texto estiloEspecifico={estilosPerfil.cameraPermissionText}>
+              Permitir Câmera
+            </Texto>
+          </TouchableOpacity>
+        ) : (
+          <CameraView style={estilosPerfil.photo} facing={facing} />
+        )}
+        <TouchableOpacity style={estilosPerfil.cameraButton} onPress={toggleCameraFacing}>
+          <Ionicons name="reload" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      <Texto estiloEspecifico={styles.sectionTitle}>Meu Perfil</Texto>
+      <Texto estiloEspecifico={estilosPerfil.sectionTitle}>Meu Perfil</Texto>
 
-      <View style={styles.form}>
-        <Texto estiloEspecifico={styles.label}>Nome</Texto>
+      <View style={estilosPerfil.cardContainer}>
+        <Texto estiloEspecifico={estilosPerfil.label}>Nome Completo</Texto>
         <TextInput
-          style={[styles.input, !isEditing && styles.inputDisabled]}
-          placeholder="Seu nome"
+          style={[estilosPerfil.input, !isEditing && estilosPerfil.inputDisabled]}
+          placeholder="Seu nome completo"
           placeholderTextColor="#999"
           value={nome}
           onChangeText={formatarNome}
           editable={isEditing}
         />
 
-        <Texto estiloEspecifico={styles.label}>Email</Texto>
+        <Texto estiloEspecifico={estilosPerfil.label}>E-Mail</Texto>
         <TextInput
-          style={[styles.input, !isEditing && styles.inputDisabled]}
+          style={[estilosPerfil.input, !isEditing && estilosPerfil.inputDisabled]}
           placeholder="seuemail@exemplo.com"
           placeholderTextColor="#999"
           keyboardType="email-address"
@@ -139,37 +161,37 @@ export default function Perfil() {
           editable={isEditing}
         />
 
-        <Texto estiloEspecifico={styles.label}>Celular</Texto>
+        <Texto estiloEspecifico={estilosPerfil.label}>WhatsApp</Texto>
         <TextInput
-          style={[styles.input, !isEditing && styles.inputDisabled]}
+          style={[estilosPerfil.input, !isEditing && estilosPerfil.inputDisabled]}
           placeholder="(xx) xxxxx-xxxx"
           placeholderTextColor="#999"
-          keyboardType="phone-pad"
+          keyboardType="numeric"
           value={celular}
           onChangeText={formatarCelular}
           editable={isEditing}
         />
 
         {!isEditing ? (
-          <TouchableOpacity style={styles.button} onPress={iniciarEdicao}>
+          <TouchableOpacity style={estilosPerfil.button} onPress={iniciarEdicao}>
             <Ionicons name="pencil" size={18} color="#fff" />
-            <Texto estiloEspecifico={styles.buttonText}>Editar Perfil</Texto>
+            <Texto estiloEspecifico={estilosPerfil.buttonText}>Editar Perfil</Texto>
           </TouchableOpacity>
         ) : (
-          <View style={styles.buttonGroup}>
+          <View style={estilosPerfil.buttonGroup}>
             <TouchableOpacity
-              style={[styles.button, styles.buttonSalvar]}
+              style={[estilosPerfil.button, estilosPerfil.buttonSalvar]}
               onPress={handleSalvar}
             >
               <Ionicons name="checkmark" size={18} color="#fff" />
-              <Texto estiloEspecifico={styles.buttonText}>Salvar</Texto>
+              <Texto estiloEspecifico={estilosPerfil.buttonText}>Salvar</Texto>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, styles.buttonCancelar]}
+              style={[estilosPerfil.button, estilosPerfil.buttonCancelar]}
               onPress={cancelarEdicao}
             >
               <Ionicons name="close" size={18} color="#fff" />
-              <Texto estiloEspecifico={styles.buttonText}>Cancelar</Texto>
+              <Texto estiloEspecifico={estilosPerfil.buttonText}>Cancelar</Texto>
             </TouchableOpacity>
           </View>
         )}
@@ -179,129 +201,3 @@ export default function Perfil() {
     </ScrollView>
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#111111",
-  },
-  content: {
-    paddingBottom: 40,
-  },
-  headerContainer: {
-    width: "100%",
-    height: 220,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#1a1a1a",
-  },
-  headerBackground: {
-    width: 220,
-    height: 220,
-    opacity: 0.16,
-  },
-  photoWrapper: {
-    width: 160,
-    height: 160,
-    borderRadius: 100,
-    backgroundColor: "#1a1a1a",
-    alignSelf: "center",
-    marginTop: -80,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
-  photo: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-  },
-  cameraButton: {
-    position: "absolute",
-    right: 4,
-    bottom: 4,
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#6d24ca",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#111111",
-  },
-  sectionTitle: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "700",
-    textAlign: "center",
-    marginTop: 24,
-    marginBottom: 16,
-  },
-  form: {
-    paddingHorizontal: 24,
-  },
-  label: {
-    color: "#f5f5f5",
-    fontSize: 16,
-    textAlign: "left",
-    marginBottom: 6,
-    marginTop: 16,
-  },
-  input: {
-    width: "100%",
-    height: 52,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#333",
-    backgroundColor: "#1d1d1d",
-    color: "white",
-    paddingHorizontal: 16,
-  },
-  inputDisabled: {
-    backgroundColor: "#161616",
-    borderColor: "#2a2a2a",
-    color: "#999",
-  },
-  button: {
-    width: "100%",
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: "#6d24ca",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 32,
-    marginBottom: 16,
-    shadowColor: "#6d24ca",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 6,
-    flexDirection: "row",
-    gap: 8,
-  },
-  buttonGroup: {
-    flexDirection: "row",
-    gap: 12,
-    marginTop: 32,
-  },
-  buttonSalvar: {
-    flex: 1,
-    backgroundColor: "#6d24ca",
-  },
-  buttonCancelar: {
-    flex: 1,
-    backgroundColor: "#444",
-    shadowColor: "#000",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-});
