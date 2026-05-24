@@ -98,7 +98,7 @@ const estilosPerfil = StyleSheet.create({
   sectionTitle: {
     color: 'white',
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'FontePadraoBold',
     textAlign: 'center',
     marginTop: 24,
     marginBottom: 16,
