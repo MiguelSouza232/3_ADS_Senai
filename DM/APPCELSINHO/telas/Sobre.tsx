@@ -30,6 +30,8 @@ export default function Sobre() {
         />
       </View>
 
+      <Texto estiloEspecifico={styles.titulo}>Sobre</Texto>
+
       <Texto estiloEspecifico={styles.texto}>
         Crescer rodeado por sons e ritmos foi algo mágico. Lembro de tardes
         inteiras ouvindo meu pai mixar músicas, aprendendo a sentir a batida e
@@ -90,6 +92,14 @@ const styles = StyleSheet.create({
     height: 350,
     alignSelf: "center",
     marginHorizontal: 16,
+  },
+  titulo: {
+    color: '#ffffff',
+    fontSize: 28,
+    fontFamily: 'FontePadraoBold',
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 12,
   },
   logo: {
     width: 300,

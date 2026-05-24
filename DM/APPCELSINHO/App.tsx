@@ -7,7 +7,7 @@ import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 //Importação da Fonte
-import { useFonts, Poppins_400Regular } from "@expo-google-fonts/poppins";
+import { useFonts, Poppins_400Regular, Poppins_700Bold } from "@expo-google-fonts/poppins";
 
 //Menu SOBRE
 import TelaSobre from "./telas/Sobre";
@@ -37,7 +37,9 @@ function Menu() {
         tabBarActiveTintColor: "#6d24ca",
         tabBarStyle: {
           backgroundColor: "#272727",
-          height: 75,
+          borderTopColor: "#6d24ca",
+          borderTopWidth: 1,
+          height: 100,
         },
         tabBarLabelStyle:{
           fontSize: 15,
@@ -54,7 +56,10 @@ function Menu() {
 
 export default function App() {
   //Carrega a fonte
-  const [fonteCarregada] = useFonts({ FontePadrao: Poppins_400Regular });
+  const [fonteCarregada] = useFonts({
+    FontePadrao: Poppins_400Regular,
+    FontePadraoBold: Poppins_700Bold,
+  });
 
   //Verifica se a fonte foi carregada
   if (!fonteCarregada) {
