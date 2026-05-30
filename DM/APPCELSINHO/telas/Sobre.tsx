@@ -8,7 +8,7 @@ import Texto from "../componentes/Texto";
 export default function Sobre() {
   //Indica o vídeo e coloca ele em loop
   const player = useVideoPlayer(
-    require("../assets/VideoLoop.mp4"),
+    require("../assets/SetCelsinho.mp4"),
     (player) => {
       player.loop = true;
       //player.play()
